@@ -1,7 +1,7 @@
 <template>
   <main v-if="!loading">
     <DataTitle :text="title" :dataDate="dataDate" />
-    <DataBoxes :stats="stats" :stats2="stats2"/>
+    <DataBoxes :stats="stats" :stats2="stats2" :stats3="stats3"/>
   </main>
   <main class="flex flex-col aling-center justify-center text-center" v-else>
     <div class="text-gray-500 text-3xl mt-10 mb-6">
@@ -9,8 +9,6 @@
     </div>
     <img :src="loadingImage" class="w-24 m-auto" alt="">
   </main>
-
-  <Info />
 </template>
 
 <script>
@@ -46,11 +44,17 @@ export default {
       const res = await fetch('https://api.covid19api.com/summary')
       const data = await res.json()
       return data
+    },
+    async fetchCovidDataLive(){
+      const res = await fetch('https://api.covid19api.com/live/country/mexico/status/confirmed')
+      const data = await res.json()
+      return data
     }
   }, 
   async created(){
     const data = await this.fetchCovidData()
     const data2 = await this.fetchCovidDataGlobal()
+    const data3 = await this.fetchCovidDataLive()
     const p = data2.Countries
     var mex;
     for(var i = 0; i < p.length; i++)
@@ -64,6 +68,7 @@ export default {
     this.dataDate = data.Date
     this.stats = data[data.length-1]
     this.stats2 = mex
+    this.stats3 = data3[data3.length-1]
     this.loading = false
 
     setTimeout(
